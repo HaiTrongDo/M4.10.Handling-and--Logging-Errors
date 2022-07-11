@@ -19,20 +19,27 @@ app.get('/', (req, res) => {
     }
 })
 
-
-app.use((err, req,res, next)=>{
-    res.status(err.status)
+app.post('/', (req, res, next) => {
+    try {
+        if (!req.body.username || !req.body.password){
+        next(new Error("invalid value"));
+        } else {
+            res.status(200).send({message: "you are authorized"})
+        }
+    } catch (err) {
+        next(err)
+    }
 })
 
 
-// Route that triggers a error
-app.get('/error', function (req, res, next) {
-    const err = new Error('Internal Server Error')
-    err["status"] = 500
-    next(err)
+app.use((err,req,res,next)=>{
+    res.status(500).send(err.message)
+    throw new Error(err)
 })
 
 
+
+app.use(errorToSlack({ webhookUri: 'https://hooks.slack.com/services/xapp-1-A03NW688HRB-3781069230899-dbed7c75ce1b47f990c58a612180d7829cb8207b1490c70094a438248c1967ee' }))
 app.listen(PORT, () => {
     console.log("App running on port: " + PORT)
 })
