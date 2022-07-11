@@ -34,7 +34,17 @@ app.post('/', (req, res, next) => {
         next(err);
     }
 });
-app.use((0, express_error_slack_1.default)({ webhookUri: 'https://hooks.slack.com/services/https://hooks.slack.com/services/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' }));
+app.get('/error', function (req, res, next) {
+    const err = new Error('Internal Server Error');
+    res.status(500);
+    res.json(err);
+    next(err);
+});
+app.use((0, express_error_slack_1.default)({ webhookUri: 'https://hooks.slack.com/services/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' }));
+app.use((err, req, res, next) => {
+    res.status(500).send(err.message);
+    throw new Error(err);
+});
 app.listen(PORT, () => {
     console.log("App running on port: " + PORT);
 });
